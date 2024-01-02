@@ -2,13 +2,20 @@ const express = require('express');
 const app = express()
 const port = 3000;
 
+app.set('view engine', 'ejs')
 
 app.get('/', (req, res) => {
-    res.sendFile('./index.html', {root: __dirname});
+    // res.sendFile('./index.html', {root: __dirname});
+    res.render('index', {
+        title: 'halaman index',
+        user: 'rifky Yudha',
+    });
 });
 
 app.get('/about',(req, res) => {
-    res.sendFile('./about.html', {root: __dirname});
+    res.render('about', {
+        title: 'halaman about'
+    })
 });
 
 app.listen(port, () => {
