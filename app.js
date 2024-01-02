@@ -1,10 +1,14 @@
 const express = require('express');
+const app = express()
 const port = 3000;
 
-const app = express()
 
 app.get('/', (req, res) => {
-    res.send('Hellow world');
+    res.sendFile('./index.html', {root: __dirname});
+});
+
+app.get('/about',(req, res) => {
+    res.sendFile('./about.html', {root: __dirname});
 });
 
 app.listen(port, () => {
