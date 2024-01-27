@@ -1,7 +1,10 @@
 const express = require("express");
 const app = express();
 const expressLayouts = require("express-ejs-layouts");
+const { loadList, findList } = require("./utils/listproses");
 const port = 3000;
+
+app.use(express.static('public'))
 
 app.set("view engine", "ejs");
 app.use(expressLayouts);
@@ -30,9 +33,27 @@ app.get("/", (req, res) => {
   });
 });
 
+app.get("/list", (req, res) => {
+  const lists = loadList();
+  res.render("list", {
+    layout: "layouts/main-layouts",
+    title: "Halaman Daftar Buku",
+    lists,
+  });
+});
+
+app.get("/list/:judulbuku", (req, res) => {
+  const list = findList(req.params.judulbuku);
+  res.render("detail", {
+    layout: "layouts/main-layouts",
+    title: "Halaman Info lebih lanjut",
+    list,
+  });
+});
+
 app.get("/about", (req, res) => {
   res.render("about", {
-    layout: 'layouts/main-layouts',
+    layout: "layouts/main-layouts",
     title: "halaman about",
   });
 });

@@ -1,0 +1,18 @@
+<% if (!list) { %>
+<div class="alert alert-danger" role="alert">
+  Data Buku tidak ada. <a href="/list" class="alert-link"><br />&laquo;Kembali ke daftar buku</a>.
+</div>
+<% } else {%>
+<div class="container mt-3">
+  <div class="card" style="width: 18rem">
+    <div class="card-body">
+      <h5 class="card-title"><%= list.judulbuku %></h5>
+      <h6 class="card-subtitle mb-2 text-body-secondary"><%= list.penulis %></h6>
+      <p class="card-text"><%= list.terbit %></p>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto, minus perferendis?</p>
+      <a href="/list" class="card-link">Kembali ke Daftar buku</a>
+    </div>
+  </div>
+</div>
+
+<% } %>
