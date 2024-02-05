@@ -1,10 +1,11 @@
 const express = require("express");
 const app = express();
 const expressLayouts = require("express-ejs-layouts");
-const { loadList, findList } = require("./utils/listproses");
-const port = 3000;
+const { loadDaftarbuku, findDaftarbuku, addBuku} = require("./utils/daftarbuku");
+const port = 8080;
 
-app.use(express.static('public'))
+app.use(express.static('public'))// build-in middleware, tidak payah diinstall
+app.use(express.urlencoded())// buikd- in middleware
 
 app.set("view engine", "ejs");
 app.use(expressLayouts);
@@ -33,21 +34,37 @@ app.get("/", (req, res) => {
   });
 });
 
-app.get("/list", (req, res) => {
-  const lists = loadList();
-  res.render("list", {
+app.get("/daftarbuku", (req, res) => {
+  const daftarbuku = loadDaftarbuku();
+  res.render("daftarbuku", {
     layout: "layouts/main-layouts",
     title: "Halaman Daftar Buku",
-    lists,
+    daftarbuku,
   });
 });
 
-app.get("/list/:judulbuku", (req, res) => {
-  const list = findList(req.params.judulbuku);
+//tambah-daftarbuku
+app.get('/daftarbuku/add', (req, res) => {
+  res.render('add-daftarbuku', {
+    layout: 'layouts/main-layouts',
+    title: 'Tambah daftar buku'
+  });
+});
+
+//proses tambah daftar buku
+app.post('/daftarbuku', (req, res) => {
+  addBuku(req.body);
+  res.redirect('/daftarbuku')
+});
+
+
+//detail buku
+app.get("/daftarbuku/:judulbuku", (req, res) => {
+  const buku = findDaftarbuku(req.params.judulbuku);
   res.render("detail", {
     layout: "layouts/main-layouts",
     title: "Halaman Info lebih lanjut",
-    list,
+    buku,
   });
 });
 
