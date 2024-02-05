@@ -3,6 +3,10 @@ const app = express();
 const expressLayouts = require("express-ejs-layouts");
 const { loadDaftarbuku, findDaftarbuku, addBuku, cekDuplikat } = require("./utils/daftarbuku");
 const { body, validationResult, check } = require("express-validator");
+const session = require("express-session");
+const cookieparser = require('cookie-parser');
+const flash = require('connect-flash')
+
 const port = 8080;
 
 app.use(express.static("public")); // build-in middleware, tidak payah diinstall
@@ -10,6 +14,16 @@ app.use(express.urlencoded({ extended: true })); // buikd- in middleware
 
 app.set("view engine", "ejs");
 app.use(expressLayouts);
+
+app.use(cookieparser('secret'));
+app.use(session({
+  cookie: {maxAge: 6000},
+  secret: 'secret',
+  resave: true,
+  saveUninitialized: true,
+}))
+
+app.use(flash())
 
 app.get("/", (req, res) => {
   // res.sendFile('./index.html', {root: __dirname});
@@ -41,6 +55,7 @@ app.get("/daftarbuku", (req, res) => {
     layout: "layouts/main-layouts",
     title: "Halaman Daftar Buku",
     daftarbuku,
+    msg: req.flash('msg'),
   });
 });
 
@@ -76,6 +91,7 @@ app.post(
       });
     } else {
       addBuku(req.body);
+      req.flash('msg', 'data berhasil ditambahkan');
       res.redirect("/daftarbuku");
     }
   }
