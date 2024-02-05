@@ -1,11 +1,12 @@
 const express = require("express");
 const app = express();
 const expressLayouts = require("express-ejs-layouts");
-const { loadDaftarbuku, findDaftarbuku, addBuku} = require("./utils/daftarbuku");
+const { loadDaftarbuku, findDaftarbuku, addBuku, cekDuplikat } = require("./utils/daftarbuku");
+const { body, validationResult, check } = require("express-validator");
 const port = 8080;
 
-app.use(express.static('public'))// build-in middleware, tidak payah diinstall
-app.use(express.urlencoded())// buikd- in middleware
+app.use(express.static("public")); // build-in middleware, tidak payah diinstall
+app.use(express.urlencoded({ extended: true })); // buikd- in middleware
 
 app.set("view engine", "ejs");
 app.use(expressLayouts);
@@ -44,19 +45,41 @@ app.get("/daftarbuku", (req, res) => {
 });
 
 //tambah-daftarbuku
-app.get('/daftarbuku/add', (req, res) => {
-  res.render('add-daftarbuku', {
-    layout: 'layouts/main-layouts',
-    title: 'Tambah daftar buku'
+app.get("/daftarbuku/add", (req, res) => {
+  res.render("add-daftarbuku", {
+    layout: "layouts/main-layouts",
+    title: "Tambah daftar buku",
   });
 });
 
 //proses tambah daftar buku
-app.post('/daftarbuku', (req, res) => {
-  addBuku(req.body);
-  res.redirect('/daftarbuku')
-});
-
+app.post(
+  "/daftarbuku",
+  [
+    body("judulbuku").custom((value) => {
+      duplikat = cekDuplikat(value);
+      if (duplikat) {
+        throw new Error("Buku ini sudah ada");
+      }
+      return true;
+    }),
+    check("penulis", "penulis harus berupa email").isEmail(),
+  ],
+  (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      // return res.status(400).json({ errors: errors.array() });
+      res.render("add-daftarbuku", {
+        title: "Form tambah daftar buku",
+        layout: "layouts/main-layouts",
+        errors: errors.array(),
+      });
+    } else {
+      addBuku(req.body);
+      res.redirect("/daftarbuku");
+    }
+  }
+);
 
 //detail buku
 app.get("/daftarbuku/:judulbuku", (req, res) => {

@@ -42,6 +42,12 @@ const addBuku = (buku) => {
   daftarbuku.push(buku);
   saveBuku(daftarbuku);
 
-};        
+};      
 
-module.exports = { loadDaftarbuku, findDaftarbuku, addBuku }
+//cek judul buku yang duplikat 
+const cekDuplikat = (judulbuku) => {
+  const daftarbuku = loadDaftarbuku();
+  return daftarbuku.find((buku) => buku.judulbuku === judulbuku);
+} 
+
+module.exports = { loadDaftarbuku, findDaftarbuku, addBuku, cekDuplikat }
