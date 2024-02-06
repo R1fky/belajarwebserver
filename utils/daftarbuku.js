@@ -23,31 +23,35 @@ const loadDaftarbuku = () => {
 };
 
 const findDaftarbuku = (judulbuku) => {
-    const daftarbuku = loadDaftarbuku();
-    const buku = daftarbuku.find(
-        (buku) => buku.judulbuku.toLowerCase() === judulbuku.toLowerCase()
-    );
-    return buku;
-}
+  const daftarbuku = loadDaftarbuku();
+  const buku = daftarbuku.find((buku) => buku.judulbuku.toLowerCase() === judulbuku.toLowerCase());
+  return buku;
+};
 
 //menulis atau menimpa data list.json dengan data yang baru
 
 const saveBuku = (daftarbuku) => {
-  fs.writeFileSync('data/list.json', JSON.stringify(daftarbuku))
-}
+  fs.writeFileSync("data/list.json", JSON.stringify(daftarbuku));
+};
 
-//menambahkan daftar buku baru 
+//menambahkan daftar buku baru
 const addBuku = (buku) => {
   const daftarbuku = loadDaftarbuku();
   daftarbuku.push(buku);
   saveBuku(daftarbuku);
+};
 
-};      
-
-//cek judul buku yang duplikat 
+//cek judul buku yang duplikat
 const cekDuplikat = (judulbuku) => {
   const daftarbuku = loadDaftarbuku();
   return daftarbuku.find((buku) => buku.judulbuku === judulbuku);
-} 
+};
 
-module.exports = { loadDaftarbuku, findDaftarbuku, addBuku, cekDuplikat }
+//menghapus buku
+const deleteBuku = (judulbuku) => {
+  const daftarbuku = loadDaftarbuku();
+  const filteredBuku = daftarbuku.filter((buku) => buku.judulbuku !== judulbuku);
+  saveBuku(filteredBuku);
+};
+
+module.exports = { loadDaftarbuku, findDaftarbuku, addBuku, cekDuplikat, deleteBuku };
