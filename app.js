@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const expressLayouts = require("express-ejs-layouts");
-const { loadDaftarbuku, findDaftarbuku, addBuku, cekDuplikat, deleteBuku } = require("./utils/daftarbuku");
+const { loadDaftarbuku, findDaftarbuku, addBuku, cekDuplikat, deleteBuku, editBuku } = require("./utils/daftarbuku");
 const { body, validationResult, check } = require("express-validator");
 const session = require("express-session");
 const cookieparser = require("cookie-parser");
@@ -112,10 +112,43 @@ app.get("/daftarbuku/delete/:judulbuku", (req, res) => {
 });
 
 //halaman edit buku
-app.get('/daftarbuku/edit/:judulbuku', (req, res) => {
-  
-})
+app.get("/daftarbuku/edit/:judulbuku", (req, res) => {
+  const buku = findDaftarbuku(req.params.judulbuku);
+  res.render("edit-daftarbuku", {
+    title: "ubah daftar buku",
+    layout: "layouts/main-layouts",
+    buku,
+  });
+});
 
+//proses ubah data buku
+app.post(
+  "/daftarbuku/update",
+  body("judulbuku").custom((value, { req }) => {
+    duplikat = cekDuplikat(value);
+    if (value !== req.body.oldjudul && duplikat) {
+      throw new Error("Judul Buku sudah ada");
+    }
+    return true;
+  }),
+  check("penulis", "penulis harus berupa email").isEmail(),
+  (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      // return res.status(400).json({ errors: errors.array() });
+      res.render("edit-daftarbuku", {
+        title: "form edit data buku",
+        layout: "layouts/main-layouts",
+        errors: errors.array(),
+        buku: req.body,
+      });
+    } else {
+      editBuku(req.body);
+      req.flash("msg", "data buku berhasil diubah");
+      res.redirect("/daftarbuku");
+    }
+  }
+);
 // buat route sebelum detail
 //detail buku
 app.get("/daftarbuku/:judulbuku", (req, res) => {

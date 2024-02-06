@@ -1,4 +1,5 @@
 const fs = require("fs");
+const { constrainedMemory } = require("process");
 const { stringify } = require("querystring");
 
 //membuat direktori
@@ -54,4 +55,13 @@ const deleteBuku = (judulbuku) => {
   saveBuku(filteredBuku);
 };
 
-module.exports = { loadDaftarbuku, findDaftarbuku, addBuku, cekDuplikat, deleteBuku };
+//mengubah data buku
+const editBuku = (bukubaru) => {
+  const daftarbuku = loadDaftarbuku();
+  const filteredBuku = daftarbuku.filter((buku) => buku.judulbuku !== bukubaru.oldjudul);
+  delete bukubaru.oldjudul;
+  filteredBuku.push(bukubaru);
+  saveBuku(filteredBuku);
+};
+
+module.exports = { loadDaftarbuku, findDaftarbuku, addBuku, cekDuplikat, deleteBuku, editBuku };
